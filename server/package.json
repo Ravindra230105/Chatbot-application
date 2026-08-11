@@ -8,8 +8,7 @@
     "dev": "nodemon server.js",
     "worker": "node worker.js",
     "worker:dev": "nodemon worker.js",
-    "db:sync": "node src/scripts/syncDatabase.js",
-    "seed": "node src/scripts/seed.js"
+    "db:sync": "node src/scripts/syncDatabase.js"
   },
   "dependencies": {
     "bullmq": "^5.34.6",

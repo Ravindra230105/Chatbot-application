@@ -41,7 +41,7 @@ server/
     sdk/                     inference logger, PII redaction, pricing
     queue/                   BullMQ queue and worker processor
     utils/                   logger, api response, sse, helpers
-    scripts/                 db sync, sample data seeder
+    scripts/                 db sync
     routes/index.js          mounts all module routes under /api
 ```
 
@@ -101,16 +101,6 @@ cd client
 npm install
 npm run dev               # http://localhost:5173
 ```
-
-**Sample data (optional)**
-
-```bash
-cd server
-npm run seed
-```
-
-This sends a few conversations through the real API, including one stream that is
-cancelled part way through, so the dashboard has something to show.
 
 ### Using a real provider
 
@@ -450,14 +440,3 @@ NAME                               STATUS   CAPACITY   ACCESS MODES   STORAGECLA
 persistentvolumeclaim/mysql-data   Bound    10Gi       RWO            local-path
 ```
 
-## Generating sample data
-
-`npm run seed` sends a handful of conversations through the real API so the
-dashboard has something to show, including one stream that is cancelled part way
-through.
-
-Error rows appear when a real failure happens rather than being simulated. The
-easiest way to produce one on demand is to exceed a provider's rate limit, which is
-stored as `provider_429` and is distinct from other provider failures.
-# Chatbot-application
-AI Chatbot With Multiple Provider
