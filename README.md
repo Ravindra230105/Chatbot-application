@@ -7,9 +7,9 @@ to a Redis queue, a worker stores it in MySQL, and a dashboard reads it back.
 
 Tech stack: Node.js, Express, Sequelize, MySQL, Redis (BullMQ), React, Vite, Recharts.
 
-![Dashboard](docs/screenshots/dashboard.png)
+![Dashboard](screenshots/dashboard.png)
 
-![Chat](docs/screenshots/chat.png)
+![Chat](screenshots/chat.png)
 
 ## Project structure
 
@@ -216,7 +216,7 @@ Two things happen for every message:
 The two sides are linked by `requestId`, which is generated before the call and
 saved on the assistant message row.
 
-More detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+More detail in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## The inference SDK
 
@@ -411,7 +411,7 @@ Confirmed working in-cluster: a real Groq call streamed 25 chunks through the cl
 pod's nginx to the server pod, the worker pod stored the log in the MySQL pod, and
 the dashboard read it back.
 
-![Kubernetes dashboard](docs/screenshots/kubernetes-dashboard.png)
+![Kubernetes dashboard](screenshots/kubernetes-dashboard.png)
 
 ```
 NAME                          READY   STATUS    RESTARTS   AGE
