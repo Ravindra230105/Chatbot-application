@@ -413,8 +413,26 @@ the dashboard read it back.
 
 ![Kubernetes dashboard](docs/screenshots/kubernetes-dashboard.png)
 
-Cluster resources are captured in
-[docs/screenshots/kubernetes-resources.txt](docs/screenshots/kubernetes-resources.txt).
+```
+NAME                          READY   STATUS    RESTARTS   AGE
+pod/client-7dbc7bc4c9-mzhzp   1/1     Running   0          2m6s
+pod/client-7dbc7bc4c9-vbwvh   1/1     Running   0          2m6s
+pod/mysql-b45bc49f9-5lksw     1/1     Running   0          2m20s
+pod/redis-6ddf79b9bc-df2sc    1/1     Running   0          2m20s
+pod/server-785d9696c4-2f6rf   1/1     Running   0          2m6s
+pod/server-785d9696c4-l4r2w   1/1     Running   0          2m6s
+pod/worker-655959bfdc-8vmq8   1/1     Running   0          2m6s
+pod/worker-655959bfdc-drhrl   1/1     Running   0          2m6s
+
+NAME                                         REFERENCE           TARGETS       MINPODS   MAXPODS   REPLICAS
+horizontalpodautoscaler.autoscaling/worker   Deployment/worker   cpu: 1%/70%   2         8         2
+
+NAME                               CLASS   HOSTS          PORTS
+ingress.networking.k8s.io/ollive   nginx   ollive.local   80
+
+NAME                               STATUS   CAPACITY   ACCESS MODES   STORAGECLASS
+persistentvolumeclaim/mysql-data   Bound    10Gi       RWO            local-path
+```
 
 ## Generating sample data
 
