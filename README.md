@@ -47,21 +47,37 @@ server/
 
 ## Setup
 
+You need one free API key. Everything else has a working default.
+
 ### Option 1: Docker Compose
 
-Put at least one provider key in `server/.env` first (see below), then:
-
 ```bash
+git clone <repo-url> && cd ollive-assignment
+
+cp server/.env.example server/.env
+# open server/.env and set GROQ_API_KEY=gsk_...
+
 docker compose --env-file server/.env up --build
 ```
 
-Open http://localhost:3000.
+Open **http://localhost:3000**.
 
-The `--env-file` flag matters: `server/.env` is the single source of truth, and the
-compose file pulls the app variables from it via `env_file` while overriding only the
-host-specific ones (`DB_HOST=mysql`, `REDIS_HOST=redis`). Without the flag, the
-`${...}` substitutions for the MySQL container fall back to defaults and the
-password will not match.
+Get a free Groq key at [console.groq.com/keys](https://console.groq.com/keys) — no
+credit card, takes about a minute. [Google AI Studio](https://aistudio.google.com/apikey)
+also works if you prefer Gemini; set `GEMINI_API_KEY` and switch provider in the UI.
+
+Two notes on that command:
+
+- **`cp server/.env.example server/.env` is required.** `.env` is gitignored, and
+  compose reads the app configuration from it, so the stack will not start without it.
+- **`--env-file server/.env` is required too.** It makes `server/.env` the single
+  source of truth: compose loads the app variables through `env_file` and overrides
+  only the host-specific ones (`DB_HOST=mysql`, `REDIS_HOST=redis`). Without the flag,
+  the MySQL container's password falls back to a default that no longer matches what
+  the server sends.
+
+To stop everything: `docker compose --env-file server/.env down`. Add `-v` to also
+drop the database volume.
 
 ### Option 2: Run locally
 
