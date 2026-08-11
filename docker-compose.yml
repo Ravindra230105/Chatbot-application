@@ -1,0 +1,72 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-ollive}
+      MYSQL_DATABASE: ${DB_NAME:-ollive_inference}
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', '127.0.0.1', '-uroot', '-p${DB_PASSWORD:-ollive}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - '6380:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  server:
+    build: ./server
+    command: sh -c "npm run db:sync && npm start"
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      INGESTION_URL: http://127.0.0.1:5000
+    ports:
+      - '5000:5000'
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build: ./server
+    command: npm run worker
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_PORT: 3306
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      server:
+        condition: service_started
+
+  client:
+    build: ./client
+    ports:
+      - '3000:80'
+    depends_on:
+      server:
+        condition: service_started
+
+volumes:
+  mysql-data:
