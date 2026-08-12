@@ -81,6 +81,7 @@ export default function MetricsCharts({ points }) {
                             stroke={CHART_COLORS.primary}
                             strokeWidth={2}
                             dot={{ r: 2 }}
+                            connectNulls={false}
                         />
                         <Line
                             type="monotone"
@@ -89,6 +90,7 @@ export default function MetricsCharts({ points }) {
                             stroke={CHART_COLORS.accent}
                             strokeWidth={2}
                             dot={{ r: 2 }}
+                            connectNulls={false}
                         />
                     </LineChart>
                 </ResponsiveContainer>

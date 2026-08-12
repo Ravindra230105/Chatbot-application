@@ -67,8 +67,7 @@ async function getTimeseries(minutes) {
                 COUNT(*) AS requests,
                 SUM(status = '${INFERENCE_STATUS.ERROR}') AS errors,
                 ROUND(AVG(latency_ms)) AS avgLatencyMs,
-                ROUND(AVG(time_to_first_token_ms)) AS avgFirstTokenMs,
-                SUM(total_tokens) AS totalTokens
+                ROUND(AVG(time_to_first_token_ms)) AS avgFirstTokenMs
          FROM inference_logs
          WHERE started_at >= :since
          GROUP BY minute
@@ -79,14 +78,27 @@ async function getTimeseries(minutes) {
         }
     );
 
-    return rows.map(row => ({
-        minute          : row.minute,
-        requests        : Number(row.requests),
-        errors          : Number(row.errors || 0),
-        avgLatencyMs    : Number(row.avgLatencyMs || 0),
-        avgFirstTokenMs : Number(row.avgFirstTokenMs || 0),
-        totalTokens     : Number(row.totalTokens || 0)
-    }));
+    const byMinute = new Map(rows.map(row => [row.minute, row]));
+    const firstMinute = windowStart(minutes);
+
+    firstMinute.setSeconds(0, 0);
+
+    const points = [];
+
+    for (let step = 0; step <= minutes; step += 1) {
+        const minute = new Date(firstMinute.getTime() + step * 60000).toISOString().replace(/\.\d+Z$/, '.000Z');
+        const row = byMinute.get(minute);
+
+        points.push({
+            minute,
+            requests        : row ? Number(row.requests) : 0,
+            errors          : row ? Number(row.errors || 0) : 0,
+            avgLatencyMs    : row ? Number(row.avgLatencyMs) : null,
+            avgFirstTokenMs : row && row.avgFirstTokenMs !== null ? Number(row.avgFirstTokenMs) : null
+        });
+    }
+
+    return points;
 }
 
 async function getProviderBreakdown(minutes) {
