@@ -21,9 +21,8 @@ module.exports = {
     },
 
     redis : {
-        host             : process.env.REDIS_HOST || '127.0.0.1',
-        port             : Number(process.env.REDIS_PORT || 6379),
-        commandTimeoutMs : Number(process.env.REDIS_COMMAND_TIMEOUT_MS || 5000)
+        host : process.env.REDIS_HOST || '127.0.0.1',
+        port : Number(process.env.REDIS_PORT || 6379)
     },
 
     ingestion : {

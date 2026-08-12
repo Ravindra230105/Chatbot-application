@@ -29,12 +29,16 @@ fewer, larger chunks.
 
 ```bash
 cp server/.env.example server/.env
-# add GROQ_API_KEY or GEMINI_API_KEY to server/.env
+# in server/.env set DB_PASSWORD to anything, and add a provider key
 
 docker compose --env-file server/.env up --build
 ```
 
 Open http://localhost:3000.
+
+`DB_PASSWORD` can be any value you like. Docker creates a fresh MySQL container with
+it, so it does not have to match anything you already have. Compose stops with a clear
+error if it is left blank.
 
 The `--env-file` flag is needed because compose reads the app settings from
 `server/.env`. Without it the MySQL container and the server end up with different

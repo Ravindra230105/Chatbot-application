@@ -2,10 +2,8 @@ const { Op, fn, col, literal, QueryTypes } = require('sequelize');
 const { sequelize, InferenceLog, FailedLog } = require('../../models');
 const { INFERENCE_STATUS } = require('../../constants');
 const { getQueueCounts } = require('../../queue/logQueue');
-const { percentile, average, withTimeout } = require('../../utils/helpers');
+const { percentile, average } = require('../../utils/helpers');
 const logger = require('../../utils/logger');
-
-const QUEUE_READ_TIMEOUT_MS = 3000;
 
 function windowStart(minutes) {
     return new Date(Date.now() - minutes * 60000);
@@ -56,7 +54,6 @@ async function getSummary(minutes) {
         requestsPerMinute : Number((requests / minutes).toFixed(2)),
         avgLatencyMs      : average(latencies),
         p95LatencyMs      : percentile(latencies, 0.95),
-        maxLatencyMs      : latencies.length ? Math.max(...latencies) : null,
         avgFirstTokenMs   : average(firstTokenTimes),
         promptTokens,
         completionTokens,
@@ -147,7 +144,8 @@ async function getPipelineHealth() {
     const failedLogs = await FailedLog.count();
 
     try {
-        const queueCounts = await withTimeout(getQueueCounts(), QUEUE_READ_TIMEOUT_MS, 'queue counts');
+        const timeout = new Promise((resolve, reject) => setTimeout(() => reject(new Error('queue read timed out')), 3000));
+        const queueCounts = await Promise.race([getQueueCounts(), timeout]);
 
         return { queue: queueCounts, failedLogs };
     } catch (error) {

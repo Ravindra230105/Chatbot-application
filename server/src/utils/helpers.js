@@ -41,16 +41,6 @@ function average(values) {
     return Math.round(total / values.length);
 }
 
-function withTimeout(promise, timeoutMs, label) {
-    let timer = null;
-
-    const timeout = new Promise((resolve, reject) => {
-        timer = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs);
-    });
-
-    return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
-}
-
 function normalizeHistory(messages) {
     const normalized = [];
 
@@ -73,4 +63,4 @@ function normalizeHistory(messages) {
     return normalized;
 }
 
-module.exports = { estimateTokens, buildPreview, buildTitle, percentile, average, normalizeHistory, withTimeout };
+module.exports = { estimateTokens, buildPreview, buildTitle, percentile, average, normalizeHistory };

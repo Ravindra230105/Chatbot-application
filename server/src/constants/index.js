@@ -1,7 +1,6 @@
 const CONVERSATION_STATUS = {
     ACTIVE    : 'active',
-    CANCELLED : 'cancelled',
-    ARCHIVED  : 'archived'
+    CANCELLED : 'cancelled'
 };
 
 const MESSAGE_ROLE = {

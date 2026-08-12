@@ -2,14 +2,14 @@ services:
   mysql:
     image: mysql:8.4
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeme-local-only}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in server/.env}
       MYSQL_DATABASE: ${DB_NAME:-ollive_inference}
     ports:
       - '3307:3306'
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', '127.0.0.1', '-uroot', '-p${DB_PASSWORD:-changeme-local-only}']
+      test: ['CMD', 'mysqladmin', 'ping', '-h', '127.0.0.1', '-uroot', '-p${DB_PASSWORD:?set DB_PASSWORD in server/.env}']
       interval: 5s
       timeout: 5s
       retries: 20
