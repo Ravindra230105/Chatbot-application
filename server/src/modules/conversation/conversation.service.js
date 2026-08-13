@@ -7,10 +7,24 @@ const { buildTitle } = require('../../utils/helpers');
 
 async function createConversation({ sessionId, provider, model }) {
     const resolved = resolveProvider(provider, model);
+    const owner = sessionId || uuidv4();
+
+    const empty = await Conversation.findOne({
+        where : {
+            sessionId    : owner,
+            status       : CONVERSATION_STATUS.ACTIVE,
+            messageCount : 0
+        },
+        order : [['id', 'DESC']]
+    });
+
+    if (empty) {
+        return empty.update({ provider: resolved.provider.name, model: resolved.model });
+    }
 
     return Conversation.create({
         uuid      : uuidv4(),
-        sessionId : sessionId || uuidv4(),
+        sessionId : owner,
         provider  : resolved.provider.name,
         model     : resolved.model
     });
