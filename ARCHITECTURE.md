@@ -1,5 +1,67 @@
 # Architecture Notes
 
+## Project structure
+
+```
+server/
+  server.js            API process
+  worker.js            queue worker process
+  src/
+    app.js             express setup
+    config/            env values, database, redis
+    constants/         shared enums
+    middlewares/       api key, validation, session, errors
+    models/            sequelize models
+    modules/           chat, conversation, logs, metrics
+    providers/         openai, groq, anthropic, gemini
+    queue/             queue producer and consumer
+    sdk/               inference logger and PII redaction
+    utils/             logger, api response, sse, helpers
+```
+
+```
+client/
+  index.html
+  vite.config.js       dev server and the /api proxy
+  nginx.conf           serves the build in Docker
+  src/
+    main.jsx           entry point and router
+    App.jsx            routes
+    api/               axios client and endpoint calls
+    pages/             chat and dashboard screens
+    components/        layout, sidebar, messages, charts, tables
+    hooks/             conversation loading
+    utils/             constants, formatting, session id
+```
+
+Every folder under `modules` holds its own routes, controller, service and validation.
+Controllers only deal with HTTP, services hold the logic and are the only layer that
+touches the models.
+
+## Tech stack
+
+- Node.js. Streaming responses and request cancellation are first class here, and the
+  API, the worker and the SDK all share one language and one set of dependencies.
+- Express. Small and unopinionated, which suits a project where the routing layer should
+  stay out of the way of the pipeline.
+- Sequelize. Gives the module structure a real model layer, and handles the JSON column,
+  enums and timestamps without hand written SQL.
+- MySQL. A well understood option for this shape of data, and nothing in the schema needs
+  Postgres specific features. The one gap is percentiles, which are worked out in the
+  service layer instead.
+- Redis with BullMQ. The queue needs retries, backoff, concurrency and duplicate job
+  detection, and BullMQ provides all four on top of Redis alone.
+- Server Sent Events. Token streaming only travels from server to client, so SSE is
+  enough and it stays plain HTTP that proxies and browsers already understand.
+- Joi. Validation sits at the ingestion boundary and has to be declarative and return
+  field level errors that can be stored with a rejected payload.
+- React with Vite. Fast dev server, and the build is plain static files that nginx can
+  serve directly, so no server side rendering is involved.
+- Recharts. Composable React components, enough for the latency and throughput lines
+  without pulling in a large charting library.
+- Docker and Kubernetes. One image runs both the API and the worker with different
+  commands, which keeps the local, Compose and cluster runs identical.
+
 ## 1. Ingestion flow
 
 What happens for one chat message:

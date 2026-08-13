@@ -8,3 +8,7 @@ logs/
 .DS_Store
 .vscode/
 .idea/
+
+# generated docs, shared as links instead
+Ollive-Architecture-Notes.pdf
+Ollive-Architecture-Notes.docx
